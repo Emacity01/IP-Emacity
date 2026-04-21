@@ -13,8 +13,6 @@ body{
     color:white;
     overflow:hidden;
 }
-
-/* Background */
 body::before{
     content:"";
     position:fixed;
@@ -25,30 +23,20 @@ body::before{
       no-repeat center/cover;
     z-index:-1;
 }
-
-/* Top Left */
 .logoBox{
-    position:absolute;
-    top:12px; left:20px;
-    font-size:13px;
-    letter-spacing:2px;
+    position:absolute; top:12px; left:20px;
+    font-size:13px; letter-spacing:2px;
     background:rgba(0,0,0,0.6);
     padding:6px 12px;
 }
-
-/* Live Clock */
 .liveBox{
-    position:absolute;
-    top:12px; right:20px;
-    font-size:13px;
-    background:rgba(0,0,0,0.6);
-    padding:6px 12px;
-    border-left:3px solid red;
+    position:absolute; top:12px; right:20px;
+    font-size:13px; background:rgba(0,0,0,0.6);
+    padding:6px 12px; border-left:3px solid red;
 }
 .dot{
-    height:10px;width:10px;background:red;
-    border-radius:50%;display:inline-block;
-    margin-right:6px;animation:pulse 1.2s infinite;
+    height:10px;width:10px;background:red;border-radius:50%;
+    display:inline-block;margin-right:6px;animation:pulse 1.2s infinite;
 }
 @keyframes pulse{
     0%{transform:scale(1);opacity:1}
@@ -56,21 +44,17 @@ body::before{
     100%{transform:scale(1);opacity:1}
 }
 
-/* FIA LOGIN */
 #login{
 position:fixed;inset:0;
 display:flex;justify-content:center;align-items:center;
-background:rgba(0,0,0,0.85);
-z-index:9999;
+background:rgba(0,0,0,0.85);z-index:9999;
 }
 .fiaBox{
 width:380px;padding:45px 35px;text-align:center;
-border-radius:10px;
-background:rgba(255,255,255,0.06);
+border-radius:10px;background:rgba(255,255,255,0.06);
 backdrop-filter:blur(12px);
 box-shadow:0 0 35px rgba(0,195,255,0.35);
 border:1px solid rgba(255,255,255,0.15);
-animation:fadeIn 1.2s ease;
 }
 .fiaBox input{
 width:80%;padding:12px;margin-top:18px;
@@ -81,36 +65,24 @@ margin-top:18px;padding:10px 25px;font-size:15px;
 border:none;border-radius:5px;background:#00c3ff;color:black;cursor:pointer;
 }
 #error{color:#ff4d4d;margin-top:12px;display:none}
-@keyframes fadeIn{
-from{opacity:0;transform:translateY(20px)}
-to{opacity:1;transform:translateY(0)}
-}
 
-/* Headline */
 .headline{
-    position:absolute;
-    top:120px;width:100%;
-    text-align:center;
-    font-size:44px;font-weight:bold;
-    opacity:0;transform:translateY(15px);
-    transition:1s;
+position:absolute; top:120px;width:100%;
+text-align:center;font-size:44px;font-weight:bold;
+opacity:0;transform:translateY(15px);transition:1s;
 }
 
-/* Card */
 .card{
-    position:absolute;
-    top:260px;width:100%;
-    text-align:center;
-    opacity:0;transition:1s;
-    font-size:22px;line-height:1.6;
+position:absolute; top:260px;width:100%;
+text-align:center;opacity:0;transition:1s;
+font-size:22px;line-height:1.6;
 }
 .highlight{color:#00c3ff;font-weight:bold;font-size:24px}
 
-/* Flash */
 .flash{
-    position:fixed;width:180px;height:180px;
-    background:radial-gradient(circle,rgba(255,255,255,.5),transparent);
-    opacity:0;pointer-events:none;
+position:fixed;width:180px;height:180px;
+background:radial-gradient(circle,rgba(255,255,255,.5),transparent);
+opacity:0;pointer-events:none;
 }
 @keyframes softFlash{
 0%{opacity:0}20%{opacity:.5}100%{opacity:0}
@@ -126,7 +98,6 @@ to{opacity:1;transform:translateY(0)}
 <span class="dot"></span> LIVE • <span id="time"></span>
 </div>
 
-<!-- LOGIN -->
 <div id="login">
   <div class="fiaBox">
     <h2>INTERNATIONAL PRESS ACCESS</h2>
@@ -150,19 +121,18 @@ to{opacity:1;transform:translateY(0)}
 <audio id="click" src="https://www.soundjay.com/button/sounds/button-09.mp3"></audio>
 
 <script>
-/* Clock IST */
 setInterval(()=>{
  document.getElementById("time").textContent =
  new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata"})+" IST";
 },1000);
 
-/* PRESS DATABASE */
+/* ✅ FIXED DATABASE */
 const pressDB={
  "PRESS01":{name:"Swanandi Santosh Swami",role:"Photographer 1"},
-"SAN11": { name: "Saniya Zunjarrao", position: "IP Head", committee: "IPC" }
+ "PRESS02":{name:"Ishaan Singh",role:"Photographer 2"},
+ "SAN11":{name:"Saniya Zunjarrao",role:"Head of IP"}
 };
 
-/* Verify */
 function verify(){
  let key=document.getElementById("passkey").value.trim().toUpperCase();
  if(pressDB[key]){
@@ -176,15 +146,12 @@ function verify(){
  }
 }
 
-/* Effects */
 function startEffects(){
  document.getElementById("click").play().catch(()=>{});
  let headline=document.getElementById("headline");
  headline.style.opacity=1;
  headline.style.transform="translateY(0)";
-
  setInterval(createFlash,1400);
-
  setTimeout(()=>{
    document.getElementById("card").style.opacity=1;
  },1200);
