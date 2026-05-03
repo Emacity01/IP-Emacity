@@ -1,134 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>International Press • Emacity MUN</title>
-
-<style>
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:black;
-    color:white;
-    overflow:hidden;
-}
-body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background:
-      linear-gradient(to bottom,rgba(0,0,0,0.75),rgba(0,0,0,0.95)),
-      url("https://images.unsplash.com/photo-1504711434969-e33886168f5c")
-      no-repeat center/cover;
-    z-index:-1;
-}
-.logoBox{
-    position:absolute; top:12px; left:20px;
-    font-size:13px; letter-spacing:2px;
-    background:rgba(0,0,0,0.6);
-    padding:6px 12px;
-}
-.liveBox{
-    position:absolute; top:12px; right:20px;
-    font-size:13px; background:rgba(0,0,0,0.6);
-    padding:6px 12px; border-left:3px solid red;
-}
-.dot{
-    height:10px;width:10px;background:red;border-radius:50%;
-    display:inline-block;margin-right:6px;animation:pulse 1.2s infinite;
-}
-@keyframes pulse{
-    0%{transform:scale(1);opacity:1}
-    50%{transform:scale(1.3);opacity:.6}
-    100%{transform:scale(1);opacity:1}
-}
-
-#login{
-position:fixed;inset:0;
-display:flex;justify-content:center;align-items:center;
-background:rgba(0,0,0,0.85);z-index:9999;
-}
-.fiaBox{
-width:380px;padding:45px 35px;text-align:center;
-border-radius:10px;background:rgba(255,255,255,0.06);
-backdrop-filter:blur(12px);
-box-shadow:0 0 35px rgba(0,195,255,0.35);
-border:1px solid rgba(255,255,255,0.15);
-}
-.fiaBox input{
-width:80%;padding:12px;margin-top:18px;
-font-size:16px;text-align:center;border:none;border-radius:5px;
-}
-.fiaBox button{
-margin-top:18px;padding:10px 25px;font-size:15px;
-border:none;border-radius:5px;background:#00c3ff;color:black;cursor:pointer;
-}
-#error{color:#ff4d4d;margin-top:12px;display:none}
-
-.headline{
-position:absolute; top:120px;width:100%;
-text-align:center;font-size:44px;font-weight:bold;
-opacity:0;transform:translateY(15px);transition:1s;
-}
-
-.card{
-position:absolute; top:260px;width:100%;
-text-align:center;opacity:0;transition:1s;
-font-size:22px;line-height:1.6;
-}
-.highlight{color:#00c3ff;font-weight:bold;font-size:24px}
-
-.flash{
-position:fixed;width:180px;height:180px;
-background:radial-gradient(circle,rgba(255,255,255,.5),transparent);
-opacity:0;pointer-events:none;
-}
-@keyframes softFlash{
-0%{opacity:0}20%{opacity:.5}100%{opacity:0}
-}
-</style>
-</head>
-
-<body>
-
-<div class="logoBox">EMACITY NEWS</div>
-
-<div class="liveBox">
-<span class="dot"></span> LIVE • <span id="time"></span>
-</div>
-
-<div id="login">
-  <div class="fiaBox">
-    <h2>INTERNATIONAL PRESS ACCESS</h2>
-    <p>Enter your Press Passkey</p>
-    <input id="passkey" placeholder="PRESS01">
-    <button onclick="verify()">ENTER NEWSROOM</button>
-    <p id="error">Invalid Passkey</p>
-  </div>
-</div>
-
-<div id="headline" class="headline">PRESS ACCESS GRANTED</div>
-
-<div id="card" class="card">
-<p>Name: <span class="highlight" id="name"></span></p>
-<p>Role: <span class="highlight" id="role"></span></p>
-<br>
-<p>You are now live inside committee.</p>
-<p>The story begins with you.</p>
-</div>
-
-<audio id="click" src="https://www.soundjay.com/button/sounds/button-09.mp3"></audio>
-
 <script>
 "use strict";
 
+/* LIVE CLOCK */
 setInterval(()=>{
  document.getElementById("time").textContent =
  new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata"})+" IST";
 },1000);
 
-/* ✅ CLEAN DATABASE */
+/* ===== REAL DATABASE (clean, complete) ===== */
 const pressDB = {
 "PRESS01": { name:"Swanandi Santosh Swami", role:"Photographer 1" },
 "PRESS02": { name:"Ishaan Singh", role:"Photographer 2" },
@@ -147,8 +26,28 @@ const pressDB = {
 "ARM11":  { name:"Armeya", role:"Head of IP" }
 };
 
+/* formatter */
+function normalizeKey(val){
+  val = val.toUpperCase().replace(/\s/g,'');
+  if(val.startsWith("PRESS")){
+    let num = val.replace(/\D/g,'');
+    if(num.length===1) num="0"+num;
+    return "PRESS"+num;
+  }
+  return val;
+}
+
+document.getElementById("passkey").addEventListener("keydown",e=>{
+  if(e.key==="Enter") verify();
+});
+
 function verify(){
- let key=document.getElementById("passkey").value.trim().toUpperCase();
+ const err=document.getElementById("error");
+ err.style.display="none";
+
+ let raw=document.getElementById("passkey").value.trim();
+ let key=normalizeKey(raw);
+
  if(pressDB[key]){
    let data=pressDB[key];
    document.getElementById("name").innerText=data.name;
@@ -156,10 +55,12 @@ function verify(){
    document.getElementById("login").style.display="none";
    startEffects();
  }else{
-   document.getElementById("error").style.display="block";
+   err.style.display="block";
+   setTimeout(()=>err.style.display="none",2000);
  }
 }
 
+/* effects */
 function startEffects(){
  document.getElementById("click").play().catch(()=>{});
  let headline=document.getElementById("headline");
@@ -181,6 +82,3 @@ function createFlash(){
  setTimeout(()=>flash.remove(),800);
 }
 </script>
-
-</body>
-</html>
