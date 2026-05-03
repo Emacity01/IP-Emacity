@@ -1,198 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IP Press Access • Emacity MUN</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>International Press • Emacity MUN</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box}
 body{
-  margin:0;
   font-family:Inter, sans-serif;
-  background:#0b0f1a;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#0f172a,#020617);
   color:white;
-  text-align:center;
   overflow:hidden;
 }
-#time{
-  position:fixed;
-  top:20px;
-  right:30px;
+
+/* soft aura */
+body::before{
+  content:"";
+  position:absolute;
+  width:700px;height:700px;
+  background:radial-gradient(circle,#3b82f6,transparent 60%);
+  filter:blur(120px);
+  animation:move 12s infinite alternate ease-in-out;
+}
+@keyframes move{
+  from{transform:translate(-200px,-150px)}
+  to{transform:translate(200px,150px)}
+}
+
+.top{
+  position:absolute;
+  top:40px;
+  text-align:center;
+}
+
+#title{
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:2px;
+  height:34px;
+}
+
+.subtitle{
+  margin-top:6px;
+  opacity:.7;
+  letter-spacing:3px;
+  font-size:13px;
+}
+
+#clock{
+  position:absolute;
+  top:40px;
+  right:40px;
   opacity:.6;
   font-weight:600;
 }
-#login{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-}
-input{
-  padding:14px 18px;
-  font-size:18px;
-  border-radius:8px;
-  border:none;
-  width:260px;
+
+.card{
+  position:relative;
+  width:360px;
+  padding:40px;
+  border-radius:20px;
+  backdrop-filter:blur(20px);
+  background:rgba(255,255,255,0.05);
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
   text-align:center;
 }
-button{
-  margin-top:15px;
-  padding:10px 20px;
+
+input{
+  width:100%;
+  padding:14px;
   border:none;
-  border-radius:6px;
+  border-radius:10px;
+  margin-bottom:15px;
+  font-size:16px;
+  text-align:center;
+  outline:none;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
   font-weight:600;
   cursor:pointer;
+  background:white;
 }
+
 #error{
-  color:#ff4d4d;
-  margin-top:10px;
+  color:#f87171;
+  margin-top:12px;
   display:none;
+  font-size:14px;
 }
-#headline{
+
+.result{
+  margin-top:30px;
   opacity:0;
-  transform:translateY(-30px);
-  transition:1s ease;
-  font-size:30px;
-  font-weight:800;
-  margin-top:80px;
+  transform:translateY(20px);
+  transition:.6s ease;
 }
-#card{
-  opacity:0;
-  transition:1s ease;
-  margin-top:40px;
-  padding:30px;
-  border-radius:12px;
-  background:rgba(255,255,255,0.05);
-  display:inline-block;
-  min-width:320px;
+.result.show{
+  opacity:1;
+  transform:translateY(0);
 }
-.flash{
-  position:fixed;
-  width:120px;
-  height:120px;
-  background:radial-gradient(circle,rgba(255,255,255,.9),transparent);
-  border-radius:50%;
-  pointer-events:none;
+.name{
+  font-size:22px;
+  font-weight:600;
 }
-@keyframes softFlash{
-  from{opacity:.9}
-  to{opacity:0}
+.role{
+  opacity:.7;
+  margin-top:6px;
 }
 </style>
 </head>
-
 <body>
 
-<div id="time"></div>
+<div class="top">
+  <div id="title"></div>
+  <div class="subtitle">INTERNATIONAL PRESS</div>
+</div>
 
-<div id="login">
-  <h2>Enter Press Passkey</h2>
-  <input id="passkey" placeholder="PRESS01">
-  <br>
-  <button id="btn">Access</button>
+<div id="clock"></div>
+
+<div class="card">
+  <input id="key" placeholder="Enter Press Passkey">
+  <button onclick="verify()">Access</button>
   <div id="error">Invalid Passkey</div>
+
+  <div class="result" id="result">
+    <div class="name" id="name"></div>
+    <div class="role" id="role"></div>
+  </div>
 </div>
-
-<div id="headline">PRESS ACCESS GRANTED</div>
-
-<div id="card">
-  <h2 id="name"></h2>
-  <p id="role"></p>
-</div>
-
-<audio id="click" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 
 <script>
-document.addEventListener("DOMContentLoaded", function(){
-
-/* Clock */
-setInterval(function(){
-  var t=document.getElementById("time");
-  if(t){
-    t.textContent=new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata"})+" IST";
+/* Typing effect */
+const text="EMACITY MODEL UNITED NATIONS";
+let i=0;
+function type(){
+  if(i<text.length){
+    document.getElementById("title").innerHTML+=text.charAt(i);
+    i++;
+    setTimeout(type,60);
   }
+}
+type();
+
+/* Clock IST */
+setInterval(()=>{
+  document.getElementById("clock").textContent =
+    new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata"})+" IST";
 },1000);
 
-/* Database */
-var pressDB={
-"PRESS01":{name:"Swanandi Santosh Swami",role:"Photographer 1"},
-"PRESS02":{name:"Ishaan Singh",role:"Photographer 2"},
-"PRESS03":{name:"Trisha Kashyap",role:"Photographer 3"},
-"PRESS04":{name:"Hridaan Chhabra",role:"Photographer 4"},
-"PRESS05":{name:"Yashvi Bajpayee",role:"Photographer 5"},
-"PRESS06":{name:"Agastyaa Saurabh Soni",role:"Photographer 6"},
-"PRESS07":{name:"Titiksha Mulay",role:"Photographer 7"},
-"PRESS08":{name:"Sudhisha Gawande",role:"Journalist 1"},
-"PRESS09":{name:"Titiksha Mulay",role:"Journalist 2"},
-"PRESS10":{name:"Kaavin Arora",role:"Journalist 3"},
-"PRESS11":{name:"Megh Dawara",role:"Journalist 4"},
-"PRESS12":{name:"Aarohi Anturkar",role:"Journalist 5"},
-"PRESS13":{name:"Aanya Chauhan",role:"Journalist 6"},
-"PRESS14":{name:"Kannkshita Shetty",role:"Journalist 7"},
+/* DB */
+const db={
+"PRESS01":{name:"Swanandi Santosh Swami",role:"Photographer"},
+"PRESS02":{name:"Ishaan Singh",role:"Photographer"},
+"PRESS03":{name:"Trisha Kashyap",role:"Photographer"},
+"PRESS04":{name:"Hridaan Chhabra",role:"Photographer"},
+"PRESS05":{name:"Yashvi Bajpayee",role:"Photographer"},
+"PRESS06":{name:"Agastyaa Saurabh Soni",role:"Photographer"},
+"PRESS07":{name:"Titiksha Mulay",role:"Photographer"},
+"PRESS08":{name:"Sudhisha Gawande",role:"Journalist"},
+"PRESS09":{name:"Titiksha Mulay",role:"Journalist"},
+"PRESS10":{name:"Kaavin Arora",role:"Journalist"},
+"PRESS11":{name:"Megh Dawara",role:"Journalist"},
+"PRESS12":{name:"Aarohi Anturkar",role:"Journalist"},
+"PRESS13":{name:"Aanya Chauhan",role:"Journalist"},
+"PRESS14":{name:"Kannkshita Shetty",role:"Journalist"},
 "ARM11":{name:"Armeya",role:"Head of IP"}
 };
 
-function normalizeKey(v){
-  v=v.toUpperCase().replace(/\s/g,'');
-  if(v.indexOf("PRESS")===0){
-    var num=v.replace(/\D/g,'');
-    if(num.length===1) num="0"+num;
-    return "PRESS"+num;
+function normalize(k){
+  k=k.toUpperCase().replace(/\s/g,'');
+  if(k.startsWith("PRESS")){
+    let n=k.replace(/\D/g,'');
+    if(n.length===1)n="0"+n;
+    return "PRESS"+n;
   }
-  return v;
+  return k;
 }
 
 function verify(){
-  var err=document.getElementById("error");
+  let key=normalize(document.getElementById("key").value);
+  let err=document.getElementById("error");
+  let res=document.getElementById("result");
   err.style.display="none";
 
-  var raw=document.getElementById("passkey").value.trim();
-  var key=normalizeKey(raw);
-
-  if(pressDB[key]){
-    var d=pressDB[key];
-    document.getElementById("name").innerText=d.name;
-    document.getElementById("role").innerText=d.role;
-    document.getElementById("login").style.display="none";
-    startEffects();
+  if(db[key]){
+    document.getElementById("name").innerText=db[key].name;
+    document.getElementById("role").innerText=db[key].role;
+    res.classList.add("show");
   }else{
+    res.classList.remove("show");
     err.style.display="block";
-    setTimeout(function(){err.style.display="none";},2000);
   }
 }
-
-document.getElementById("btn").onclick=verify;
-document.getElementById("passkey").addEventListener("keydown",function(e){
-  if(e.key==="Enter") verify();
-});
-
-function startEffects(){
-  var click=document.getElementById("click");
-  if(click) click.play().catch(function(){});
-
-  var h=document.getElementById("headline");
-  h.style.opacity=1;
-  h.style.transform="translateY(0)";
-
-  setInterval(createFlash,1400);
-
-  setTimeout(function(){
-    document.getElementById("card").style.opacity=1;
-  },1200);
-}
-
-function createFlash(){
-  var f=document.createElement("div");
-  f.className="flash";
-  f.style.top=Math.random()*80+"%";
-  f.style.left=Math.random()*80+"%";
-  document.body.appendChild(f);
-  setTimeout(function(){f.remove();},800);
-}
-
-});
 </script>
 
 </body>
