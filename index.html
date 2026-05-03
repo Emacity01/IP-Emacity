@@ -1,13 +1,120 @@
-<script>
-"use strict";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IP Press Access • Emacity MUN</title>
 
-/* LIVE CLOCK */
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+body{
+ margin:0;
+ font-family:Inter, sans-serif;
+ background:#0a0a0f;
+ color:white;
+ overflow:hidden;
+ text-align:center;
+}
+#time{
+ position:fixed;
+ top:20px;
+ right:30px;
+ font-weight:600;
+ opacity:.7;
+}
+#login{
+ position:absolute;
+ top:50%;
+ left:50%;
+ transform:translate(-50%,-50%);
+}
+input{
+ padding:14px 18px;
+ border:none;
+ border-radius:8px;
+ font-size:18px;
+ outline:none;
+ width:260px;
+ text-align:center;
+}
+button{
+ margin-top:15px;
+ padding:10px 20px;
+ border:none;
+ border-radius:6px;
+ font-weight:600;
+ cursor:pointer;
+}
+#error{
+ color:#ff4d4d;
+ margin-top:10px;
+ display:none;
+}
+#headline{
+ opacity:0;
+ transform:translateY(-30px);
+ transition:1s ease;
+ font-size:28px;
+ font-weight:800;
+ margin-top:80px;
+}
+#card{
+ opacity:0;
+ transition:1s ease;
+ margin-top:40px;
+ padding:30px;
+ border-radius:12px;
+ background:rgba(255,255,255,0.05);
+ display:inline-block;
+ min-width:300px;
+}
+.flash{
+ position:fixed;
+ width:120px;
+ height:120px;
+ background:radial-gradient(circle,rgba(255,255,255,.9),transparent);
+ border-radius:50%;
+ pointer-events:none;
+}
+@keyframes softFlash{
+ from{opacity:.9}
+ to{opacity:0}
+}
+</style>
+</head>
+
+<body>
+
+<div id="time"></div>
+
+<div id="login">
+ <h2>Enter Press Passkey</h2>
+ <input id="passkey" placeholder="PRESS01"/>
+ <br>
+ <button onclick="verify()">Access</button>
+ <div id="error">Invalid Passkey</div>
+</div>
+
+<div id="headline">PRESS ACCESS GRANTED</div>
+
+<div id="card">
+ <h2 id="name"></h2>
+ <p id="role"></p>
+</div>
+
+<audio id="click" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
 setInterval(()=>{
- document.getElementById("time").textContent =
- new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata"})+" IST";
+ const t=document.getElementById("time");
+ if(t){
+  t.textContent=new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata"})+" IST";
+ }
 },1000);
 
-/* ===== REAL DATABASE (clean, complete) ===== */
 const pressDB = {
 "PRESS01": { name:"Swanandi Santosh Swami", role:"Photographer 1" },
 "PRESS02": { name:"Ishaan Singh", role:"Photographer 2" },
@@ -26,22 +133,21 @@ const pressDB = {
 "ARM11":  { name:"Armeya", role:"Head of IP" }
 };
 
-/* formatter */
 function normalizeKey(val){
-  val = val.toUpperCase().replace(/\s/g,'');
-  if(val.startsWith("PRESS")){
-    let num = val.replace(/\D/g,'');
-    if(num.length===1) num="0"+num;
-    return "PRESS"+num;
-  }
-  return val;
+ val=val.toUpperCase().replace(/\s/g,'');
+ if(val.startsWith("PRESS")){
+  let num=val.replace(/\D/g,'');
+  if(num.length===1) num="0"+num;
+  return "PRESS"+num;
+ }
+ return val;
 }
 
 document.getElementById("passkey").addEventListener("keydown",e=>{
-  if(e.key==="Enter") verify();
+ if(e.key==="Enter") verify();
 });
 
-function verify(){
+window.verify=function(){
  const err=document.getElementById("error");
  err.style.display="none";
 
@@ -49,18 +155,17 @@ function verify(){
  let key=normalizeKey(raw);
 
  if(pressDB[key]){
-   let data=pressDB[key];
-   document.getElementById("name").innerText=data.name;
-   document.getElementById("role").innerText=data.role;
-   document.getElementById("login").style.display="none";
-   startEffects();
+  let data=pressDB[key];
+  document.getElementById("name").innerText=data.name;
+  document.getElementById("role").innerText=data.role;
+  document.getElementById("login").style.display="none";
+  startEffects();
  }else{
-   err.style.display="block";
-   setTimeout(()=>err.style.display="none",2000);
+  err.style.display="block";
+  setTimeout(()=>err.style.display="none",2000);
  }
 }
 
-/* effects */
 function startEffects(){
  document.getElementById("click").play().catch(()=>{});
  let headline=document.getElementById("headline");
@@ -68,7 +173,7 @@ function startEffects(){
  headline.style.transform="translateY(0)";
  setInterval(createFlash,1400);
  setTimeout(()=>{
-   document.getElementById("card").style.opacity=1;
+  document.getElementById("card").style.opacity=1;
  },1200);
 }
 
@@ -81,4 +186,9 @@ function createFlash(){
  document.body.appendChild(flash);
  setTimeout(()=>flash.remove(),800);
 }
+
+});
 </script>
+
+</body>
+</html>
