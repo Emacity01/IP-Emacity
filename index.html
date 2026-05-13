@@ -22,7 +22,7 @@ body{
   position:relative;
 }
 
-/* animated aura FIXED */
+/* animated aura */
 body::before{
   content:"";
   position:absolute;
@@ -37,7 +37,6 @@ body::before{
   to{transform:translate(200px,150px)}
 }
 
-/* ensure content always above aura */
 .wrapper{
   position:relative;
   z-index:2;
@@ -45,7 +44,6 @@ body::before{
   text-align:center;
 }
 
-/* top title */
 .top{
   position:absolute;
   top:40px;
@@ -75,7 +73,6 @@ body::before{
   z-index:3;
 }
 
-/* card */
 .card{
   margin:auto;
   width:380px;
@@ -102,6 +99,7 @@ input{
   text-align:center;
   outline:none;
 }
+input::placeholder{opacity:.4}
 
 button{
   width:100%;
@@ -113,7 +111,10 @@ button{
   background:white;
   transition:.2s;
 }
-button:hover{transform:scale(1.03)}
+button:hover{
+  transform:scale(1.03);
+  box-shadow:0 10px 30px rgba(255,255,255,.2);
+}
 
 #error{
   color:#f87171;
@@ -165,10 +166,11 @@ button:hover{transform:scale(1.03)}
 </div>
 
 <script>
-/* Typing effect */
+/* Typing effect (fixed reset) */
 const text="EMACITY MODEL UNITED NATIONS";
 let i=0;
 function type(){
+  if(i===0) document.getElementById("title").innerHTML="";
   if(i<text.length){
     document.getElementById("title").innerHTML+=text.charAt(i);
     i++;
@@ -183,7 +185,7 @@ setInterval(()=>{
     new Date().toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata"})+" IST";
 },1000);
 
-/* DB */
+/* Database */
 const db={
 "PRESS01":{name:"Swanandi Santosh Swami",role:"Photographer"},
 "PRESS02":{name:"Ishaan Singh",role:"Photographer"},
@@ -202,7 +204,7 @@ const db={
 "PRESS15":{name:"Shriya Rajan",role:"Journalist"},
 "PRESS16":{name:"Seerat Khandelwal",role:"Photographer"},
 "PRESS17":{name:"Hussain Dhinojwala",role:"Photographer"},
-"PRESS18":{name:"Aryan Kulkarni",role:"PHOTOGRAPHER"},
+"PRESS18":{name:"Aryan Kulkarni",role:"Photographer"},
 "ARM11":{name:"Armeya",role:"Head of IP"}
 };
 
@@ -220,14 +222,15 @@ function verify(){
   let key=normalize(document.getElementById("key").value);
   let err=document.getElementById("error");
   let res=document.getElementById("result");
+
   err.style.display="none";
+  res.classList.remove("show");
 
   if(db[key]){
     document.getElementById("name").innerText=db[key].name;
     document.getElementById("role").innerText=db[key].role;
     res.classList.add("show");
   }else{
-    res.classList.remove("show");
     err.style.display="block";
   }
 }
